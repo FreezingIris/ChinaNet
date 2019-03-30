@@ -41,4 +41,4 @@ Ubuntu/Debian执行这个： apt-get update & apt-get -y install git
 ChinaNet/ChinaNet.sh -i Password Port
 
 
-脚本来自网络
+以上脚本来自网络
