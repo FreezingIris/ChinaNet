@@ -1,5 +1,5 @@
 #! /bin/bash
-# Copyright (c) 2019 ChinaNet
+# Copyright (c) 2018 ChinaNet
 
 red='\033[0;31m'
 green='\033[0;32m'
@@ -51,23 +51,23 @@ centosversion(){
 }
 
 firewall_set() {
-	echo -e "[${green}信息${plain}] 正在设置防火墙..."
+	echo -e "[${green}信息${plain}] 正在设置防火墙，请稍后..."
 	if centosversion 6; then
 		/etc/init.d/iptables status > /dev/null 2>&1
 		if [ $? -eq 0 ]; then
 			chkconfig iptables off
-			echo -e "[${green}信息${plain}] 防火墙已关闭。"
+			echo -e "[${green}信息${plain}] 防火墙已经关闭。"
 		else
-			echo -e "[${yellow}警告${plain}] 防火墙（iptables）已停止或没有安装，请手动关闭防火墙。"
+			echo -e "[${yellow}警告${plain}] 防火墙（iptables）好像已经停止或没有安装，如有需要请手动关闭防火墙。"
 		fi
 	elif centosversion 7; then
 		systemctl status firewalld > /dev/null 2>&1
 		if [ $? -eq 0 ]; then
 			systemctl stop firewalld.service
 			systemctl disable firewalld.service
-			echo -e "[${green}信息${plain}] 防火墙已关闭。"
+			echo -e "[${green}信息${plain}] 防火墙已经关闭。"
 		else
-			echo -e "[${yellow}警告${plain}] 防火墙（iptables）已停止或没有安装，请手动关闭防火墙。"
+			echo -e "[${yellow}警告${plain}] 防火墙（iptables）好像已经停止或没有安装，如有需要请手动关闭防火墙。"
 		fi
 	fi
 	echo -e "[${green}信息${plain}] 防火墙设置成功。"
