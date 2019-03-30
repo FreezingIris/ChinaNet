@@ -35,4 +35,4 @@ Ubuntu/Debian执行这个： apt-get update & apt-get -y install git
 ##搭建ss脚本代码：
 
 
-ChinaNet/ChinaNet.sh -i abc12315 1567
+ChinaNet/ChinaNet.sh -i Password Port
