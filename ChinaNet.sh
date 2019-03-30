@@ -1,5 +1,5 @@
 #! /bin/bash
-# Copyright (c) 2019 ChinaNet
+# Copyright (c) 2018 ChinaNet
 
 red='\033[0;31m'
 green='\033[0;32m'
@@ -7,8 +7,8 @@ yellow='\033[0;33m'
 plain='\033[0m'
 
 os='ossystem'
-password='flyzy2005.com'
-port='1024'
+password='abc12315'
+port='1567'
 libsodium_file="libsodium-1.0.16"
 libsodium_url="https://github.com/jedisct1/libsodium/releases/download/1.0.16/libsodium-1.0.16.tar.gz"
 
@@ -40,7 +40,7 @@ install_ss() {
         fi
         if [[ $port -le 0 || $port -gt 65535 ]]
         then
-          wrong_para_prompt "端口号输入格式错误，请输入1到65535"
+          wrong_para_prompt "端口号输入格式错误，(应为1到65535)"
           exit 1
         fi
         check_os
@@ -60,7 +60,7 @@ install_ss() {
 }
 
 uninstall_ss() {
-        read -p "确定要卸载ss吗？(y/n) :" option
+        read -p "确定要卸载Shadowsocks吗？(y/n) :" option
         [ -z ${option} ] && option="n"
         if [ "${option}" == "y" ] || [ "${option}" == "Y" ]
         then
@@ -82,7 +82,7 @@ uninstall_ss() {
                 if [ -f /usr/local/shadowsocks_install.log ]; then
                         cat /usr/local/shadowsocks_install.log | xargs rm -rf
                 fi
-                echo "ss卸载成功！"
+                echo "Shadowsocks卸载成功！"
         else
                 echo
                 echo "卸载取消"
@@ -338,7 +338,7 @@ generate_config() {
     "local_port":1080,
     "password":"$1",
     "timeout":300,
-    "method":"aes-256-cfb",
+    "method":"chacha20",
     "fast_open":false
 }
 EOF
@@ -359,7 +359,7 @@ firewall_set(){
                 echo -e "[${green}信息${plain}] port ${port}已经开放。"
             fi
         else
-            echo -e "[${yellow}警告${plain}] 防火墙（iptables）已停止或没有安装，请手动关闭防火墙。"
+            echo -e "[${yellow}警告${plain}] 防火墙（iptables）好像已经停止或没有安装，如有需要请手动关闭防火墙。"
         fi
     elif centosversion 7; then
         systemctl status firewalld > /dev/null 2>&1
@@ -368,7 +368,7 @@ firewall_set(){
             firewall-cmd --permanent --zone=public --add-port=${port}/udp
             firewall-cmd --reload
         else
-            echo -e "[${yellow}警告${plain}] 防火墙（iptables）已停止或没有安装，请手动关闭防火墙。"
+            echo -e "[${yellow}警告${plain}] 防火墙（iptables）好像已经停止或没有安装，如有需要请手动关闭防火墙。"
         fi
     fi
     echo -e "[${green}信息${plain}] 防火墙设置成功。"
@@ -439,17 +439,15 @@ install() {
                 esac            
                 ssserver -c /etc/shadowsocks.json -d start
         else    
-                echo -e "[${red}错误${plain}] ss服务器安装失败，请联系服务器供应商"
+                echo -e "[${red}错误${plain}] Shadowsocks服务器安装失败，请自查原因！"
                 cleanup
                 exit 1
         fi      
-        echo -e "[${green}Complete${plain}] Successfully！"
-        echo -e "IP         ：\033[41;37m $(get_ip) \033[0m"
-        echo -e "Password   ：\033[41;37m ${password} \033[0m"
-        echo -e "Port       ：\033[41;37m ${port} \033[0m"
-        echo -e "Encryption ：\033[41;37m aes-256-cfb \033[0m"
-        echo -e "GetTest    ：\033[41;37m https://ping.pe \033[0m"
-        get_ss_link
+        echo -e "[${green}成功${plain}] 安装成功！"
+        echo -e "服务器地址      ：\033[41;37m $(get_ip) \033[0m"
+        echo -e "密码            ：\033[41;37m ${password} \033[0m"
+        echo -e "端口            ：\033[41;37m ${port} \033[0m"
+        echo -e "加密方式        ：\033[41;37m chacha20 \033[0m"
 }
 
 cleanup() {
@@ -462,19 +460,6 @@ get_ip(){
     [ -z ${IP} ] && IP=$( wget -qO- -t1 -T2 ipv4.icanhazip.com )
     [ -z ${IP} ] && IP=$( wget -qO- -t1 -T2 ipinfo.io/ip )
     [ ! -z ${IP} ] && echo ${IP} || echo
-}
-
-get_ss_link(){
-    if [ ! -f "/etc/shadowsocks.json" ]; then
-        echo 'Shdowsocks配置文件不存在，请检查（/etc/shadowsocks.json）'
-        exit 1
-    fi
-    local tmp=$(echo -n "`get_config_value method`:`get_config_value password`@`get_ip`:`get_config_value server_port`" | base64 -w0)
-    echo -e "ShadowsocksLink：\033[41;37m ss://${tmp} \033[0m"
-}
-
-get_config_value(){
-    cat /etc/shadowsocks.json | grep "\"$1\":"|awk -F ":" '{print $2}'| sed 's/\"//g;s/,//g;s/ //g'
 }
 
 if [ "$#" -eq 0 ]; then
@@ -511,9 +496,6 @@ case $1 in
 	-uninstall )
 		uninstall_ss
 		;;
-        -sslink )
-                get_ss_link
-                ;;
 	* )
 		usage
 		;;
