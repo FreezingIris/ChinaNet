@@ -39,3 +39,12 @@ Ubuntu/Debian执行这个： apt-get update & apt-get -y install git
 
 
 ChinaNet/ChinaNet.sh -i Password Port
+
+
+
+
+
+
+
+
+脚本来自https://www.flyzy2005.com
