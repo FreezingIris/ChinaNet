@@ -32,6 +32,9 @@ Centos执行这个： yum -y install git
 Ubuntu/Debian执行这个： apt-get update & apt-get -y install git
 
 
+提示Shell脚本权限不足则运行： chmod 777 ./ChinaNet.sh
+
+
 ##搭建ss脚本代码：
 
 
